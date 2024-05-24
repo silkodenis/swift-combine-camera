@@ -19,12 +19,24 @@
 import AVFoundation
 import Combine
 
+/// An enumeration that defines various states of camera access authorization.
 public enum CameraAccessStatus {
+    /// The user has not yet made a choice regarding whether the app can use the camera.
     case notDetermined
+    
+    /// The user has made a choice regarding camera access, but it is not yet determined if access is granted.
     case determined
+    
+    /// The user is not allowed to access the camera due to restrictions such as parental controls.
     case restricted
+    
+    /// The user has explicitly denied access to the camera.
     case denied
+    
+    /// The user has granted access to the camera.
     case authorized
+    
+    /// The camera access status is unknown.
     case unknown
 }
 

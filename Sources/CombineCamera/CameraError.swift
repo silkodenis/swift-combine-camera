@@ -19,14 +19,29 @@
 import Foundation
 import AVFoundation
 
+/// An enumeration that defines various errors that can occur when using the camera.
 public enum CameraError: Error {
+    /// Access to the camera has been denied by the user.
     case denied
+    
+    /// Camera access is still being determined.
     case determined
+    
+    /// The user is not authorized to use the camera.
     case unauthorized
-    case unconfigured
+    
+    /// Unable to set the specified camera session preset.
+    /// - Parameter sessionPreset: The camera session preset that could not be set.
     case cannotSet(_ sessionPreset: AVCaptureSession.Preset)
+    
+    /// No camera is available on this device.
     case noCameraAvailable
+    
+    /// Unable to add output to the camera session.
     case unableToAddOutput
+    
+    /// An unknown error occurred.
+    /// - Parameter error: The underlying error that occurred.
     case unknown(Error)
 }
 
@@ -39,8 +54,6 @@ extension CameraError: LocalizedError {
             return "Camera access is still being determined."
         case .unauthorized:
             return "You are not authorized to use the camera."
-        case .unconfigured:
-            return "The camera is not properly configured."
         case .cannotSet(let sessionPreset):
             return "Unable to set the camera session preset: \(sessionPreset)."
         case .noCameraAvailable:
