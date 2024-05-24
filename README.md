@@ -51,6 +51,10 @@ let package = Package(
 
 This setup specifies that CombineCamera should be pulled from the master branch and included in the YourTargetName target of your project.
 
+## Demo Application
+
+To see a working example of how to use the CombineCamera package, check out the CombineCamera [Demo App](https://github.com/silkodenis/combine-camera-demo-app) repository. This demo application demonstrates how to integrate CombineCamera in an iOS project with a UDF (Unidirectional Data Flow) architecture using Combine.
+
 ## Contributing
 
 Contributions are welcome! Feel free to open issues or submit pull requests.
