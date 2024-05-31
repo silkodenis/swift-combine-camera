@@ -44,16 +44,20 @@ class CameraSession {
     }
     
     public func stopCapture() -> AnyPublisher<Void, Never> {
-        executeInSessionQueue { [unowned self] in
-            if session.isRunning == true {
-                session.stopRunning()
+        executeInSessionQueue { [weak self] in
+            guard let self else { return }
+            
+            if self.session.isRunning == true {
+                self.session.stopRunning()
             }
         }
     }
     
     public func switchCamera() -> AnyPublisher<Void, CameraError> {
-        commitConfiguration { [unowned self] in
-            try input.switchPosition(self.session)
+        commitConfiguration { [weak self] in
+            guard let self else { return }
+            
+            try self.input.switchPosition(self.session)
         }
     }
 }
@@ -62,9 +66,11 @@ class CameraSession {
 
 extension CameraSession {
     private func start() -> AnyPublisher<Void, Never> {
-        executeInSessionQueue { [unowned self] in
-            if session.isRunning == false {
-                session.startRunning()
+        executeInSessionQueue { [weak self] in
+            guard let self else { return }
+            
+            if self.session.isRunning == false {
+                self.session.startRunning()
             }
         }
     }
@@ -93,10 +99,12 @@ extension CameraSession {
             }
         }
         
-        return commitConfiguration { [unowned self] in
-            try setSessionPreset(preset)
-            try input.configure(session)
-            try output.connectToSession(session)
+        return commitConfiguration { [weak self] in
+            guard let self else { return }
+            
+            try self.setSessionPreset(preset)
+            try self.input.configure(session)
+            try self.output.connectToSession(session)
         }
     }
     
@@ -109,24 +117,28 @@ extension CameraSession {
     }
     
     private func executeInSessionQueue(_ event: @escaping () -> Void) -> AnyPublisher<Void, Never> {
-        Future { [unowned self] promise in
-            sessionQueue.async {
+        Future { [weak self] promise in
+            guard let self else { return }
+            
+            self.sessionQueue.async {
                 event()
                 promise(.success(()))
             }
         }
         .eraseToAnyPublisher()
     }
-    
+
     private func commitConfiguration(_ configuration: @escaping () throws -> Void) -> AnyPublisher<Void, CameraError> {
-        Future { [unowned self] promise in
-            sessionQueue.async { [unowned self] in
-                session.beginConfiguration()
+        Future { [weak self] promise in
+            guard let self else { return }
+            
+            self.sessionQueue.async {
+                self.session.beginConfiguration()
                 var isSuccess = false
                 
                 defer {
-                    session.commitConfiguration()
-                    isConfigured = isSuccess
+                    self.session.commitConfiguration()
+                    self.isConfigured = isSuccess
                 }
                 
                 do {
