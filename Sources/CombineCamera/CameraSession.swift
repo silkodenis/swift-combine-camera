@@ -47,8 +47,8 @@ class CameraSession {
         executeInSessionQueue { [weak self] in
             guard let self else { return }
             
-            if self.session.isRunning == true {
-                self.session.stopRunning()
+            if session.isRunning == true {
+                session.stopRunning()
             }
         }
     }
@@ -57,7 +57,7 @@ class CameraSession {
         commitConfiguration { [weak self] in
             guard let self else { return }
             
-            try self.input.switchPosition(self.session)
+            try input.switchPosition(self.session)
         }
     }
 }
@@ -69,8 +69,8 @@ extension CameraSession {
         executeInSessionQueue { [weak self] in
             guard let self else { return }
             
-            if self.session.isRunning == false {
-                self.session.startRunning()
+            if session.isRunning == false {
+                session.startRunning()
             }
         }
     }
@@ -91,7 +91,9 @@ extension CameraSession {
     private func configureIfNeeded(at position: AVCaptureDevice.Position?) -> AnyPublisher<Void, CameraError> {
         if isConfigured {
             if let position = position, position != input.devicePosition {
-                return commitConfiguration { [unowned self] in
+                return commitConfiguration { [weak self] in
+                    guard let self else { return }
+                    
                     try input.configure(session, at: position)
                 }
             } else {
@@ -102,9 +104,9 @@ extension CameraSession {
         return commitConfiguration { [weak self] in
             guard let self else { return }
             
-            try self.setSessionPreset(preset)
-            try self.input.configure(session)
-            try self.output.connectToSession(session)
+            try setSessionPreset(preset)
+            try input.configure(session)
+            try output.connectToSession(session)
         }
     }
     
@@ -120,7 +122,7 @@ extension CameraSession {
         Future { [weak self] promise in
             guard let self else { return }
             
-            self.sessionQueue.async {
+            sessionQueue.async {
                 event()
                 promise(.success(()))
             }
@@ -132,7 +134,7 @@ extension CameraSession {
         Future { [weak self] promise in
             guard let self else { return }
             
-            self.sessionQueue.async {
+            sessionQueue.async {
                 self.session.beginConfiguration()
                 var isSuccess = false
                 
