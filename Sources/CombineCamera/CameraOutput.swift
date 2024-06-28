@@ -22,21 +22,18 @@ import Combine
 internal class CameraOutput: NSObject {
     private let videoDataOutput = AVCaptureVideoDataOutput()
     private var pixelBufferSubject = PassthroughSubject<CVPixelBuffer, Never>()
+    private let videoOrientation: AVCaptureVideoOrientation
     private let outputQueue = DispatchQueue(label: "CombineCamera.outputQueue",
                                              qos: .userInitiated,
                                              attributes: [],
                                              autoreleaseFrequency: .workItem)
     
     internal init(videoOrientation: AVCaptureVideoOrientation) {
+        self.videoOrientation = videoOrientation
         super.init()
         videoDataOutput.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA]
         videoDataOutput.setSampleBufferDelegate(self, queue: outputQueue)
         videoDataOutput.alwaysDiscardsLateVideoFrames = true
-        
-        if let connection = videoDataOutput.connection(with: .video), 
-            connection.isVideoOrientationSupported {
-            connection.videoOrientation = videoOrientation
-        }
     }
     
     public var pixelBuffer: AnyPublisher<CVPixelBuffer, Never> {
@@ -49,6 +46,11 @@ internal class CameraOutput: NSObject {
         }
         
         session.addOutput(videoDataOutput)
+        
+        if let connection = videoDataOutput.connection(with: .video),
+            connection.isVideoOrientationSupported {
+            connection.videoOrientation = videoOrientation
+        }
     }
 }
 
