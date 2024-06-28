@@ -85,6 +85,11 @@ public final class Camera {
         session.session
     }
     
+    /// The current capture device.
+    public var captureDevice: AVCaptureDevice? {
+        session.input.captureDevice
+    }
+    
     /// A publisher that emits the pixel buffer from the video output.
     public var pixelBuffer: AnyPublisher<CVPixelBuffer, Never> {
         session.output.pixelBuffer

@@ -19,14 +19,15 @@
 import AVFoundation
 
 internal class CameraInput {
-    public var devicePosition: AVCaptureDevice.Position
+    public var captureDevice: AVCaptureDevice?
+    public var captureDevicePosition: AVCaptureDevice.Position
     
     internal init(devicePosition: AVCaptureDevice.Position) {
-        self.devicePosition = devicePosition
+        self.captureDevicePosition = devicePosition
     }
     
     public func switchPosition(_ session: AVCaptureSession) throws {
-        try configure(session, at: (devicePosition == .back) ? .front : .back)
+        try configure(session, at: (captureDevicePosition == .back) ? .front : .back)
     }
     
     public func configure(_ session: AVCaptureSession, at position: AVCaptureDevice.Position? = nil) throws {
@@ -34,7 +35,7 @@ internal class CameraInput {
             session.removeInput(currentInput)
         }
         
-        let input = try makeInput(at: position ?? devicePosition)
+        let input = try makeInput(at: position ?? captureDevicePosition)
         
         guard session.canAddInput(input) else {
             throw CameraError.noCameraAvailable
@@ -47,12 +48,14 @@ internal class CameraInput {
     
     private func makeInput(at position: AVCaptureDevice.Position) throws -> AVCaptureDeviceInput {
         guard let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: position) else {
+            self.captureDevice = nil
             throw CameraError.noCameraAvailable
         }
         
         let input = try AVCaptureDeviceInput(device: device)
-        devicePosition = position
-        
+        self.captureDevicePosition = position
+        self.captureDevice = device
+
         return input
     }
 }

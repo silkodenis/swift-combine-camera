@@ -22,7 +22,7 @@ import Combine
 class CameraSession {
     public let session = AVCaptureSession()
     public let output: CameraOutput
-    private let input: CameraInput
+    public let input: CameraInput
     private let sessionQueue = DispatchQueue(label: "CombineCamera.sessionQueue")
     private let preset: AVCaptureSession.Preset
     private var isConfigured = false
@@ -90,7 +90,7 @@ extension CameraSession {
     
     private func configureIfNeeded(at position: AVCaptureDevice.Position?) -> AnyPublisher<Void, CameraError> {
         if isConfigured {
-            if let position = position, position != input.devicePosition {
+            if let position = position, position != input.captureDevicePosition {
                 return commitConfiguration { [weak self] in
                     guard let self else { return }
                     
