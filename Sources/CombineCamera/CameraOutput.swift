@@ -52,6 +52,17 @@ internal class CameraOutput: NSObject {
             connection.videoOrientation = videoOrientation
         }
     }
+    
+    public func updateConnectionOrientation(for position: AVCaptureDevice.Position) {
+        guard let connection = videoDataOutput.connection(with: .video),
+              connection.isVideoOrientationSupported else { return }
+
+        connection.videoOrientation = videoOrientation
+
+        if connection.isVideoMirroringSupported {
+            connection.isVideoMirrored = (position == .front)
+        }
+    }
 }
 
 extension CameraOutput: AVCaptureVideoDataOutputSampleBufferDelegate {

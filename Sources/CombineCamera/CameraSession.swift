@@ -54,11 +54,17 @@ class CameraSession {
     }
     
     public func switchCamera() -> AnyPublisher<Void, CameraError> {
-        commitConfiguration { [weak self] in
+        let newPosition: AVCaptureDevice.Position = (input.captureDevicePosition == .back) ? .front : .back
+        
+        return commitConfiguration { [weak self] in
             guard let self else { return }
-            
             try input.switchPosition(self.session)
         }
+        .handleEvents(receiveOutput: { [weak self] in
+            guard let self else { return }
+            output.updateConnectionOrientation(for: newPosition)
+        })
+        .eraseToAnyPublisher()
     }
 }
 
