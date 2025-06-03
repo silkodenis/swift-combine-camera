@@ -112,7 +112,7 @@ extension CameraSession {
             
             try setSessionPreset(preset)
             try input.configure(session)
-            try output.connectToSession(session)
+            try output.connectToSession(session, position: position)
         }
     }
     

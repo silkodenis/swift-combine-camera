@@ -40,7 +40,7 @@ internal class CameraOutput: NSObject {
         pixelBufferSubject.eraseToAnyPublisher()
     }
     
-    public func connectToSession(_ session: AVCaptureSession) throws {
+    public func connectToSession(_ session: AVCaptureSession, position: AVCaptureDevice.Position?) throws {
         guard session.canAddOutput(videoDataOutput) else {
             throw CameraError.unableToAddOutput
         }
@@ -50,6 +50,10 @@ internal class CameraOutput: NSObject {
         if let connection = videoDataOutput.connection(with: .video),
             connection.isVideoOrientationSupported {
             connection.videoOrientation = videoOrientation
+            
+            if let position, connection.isVideoMirroringSupported {
+                connection.isVideoMirrored = (position == .front)
+            }
         }
     }
     
@@ -60,7 +64,7 @@ internal class CameraOutput: NSObject {
         connection.videoOrientation = videoOrientation
 
         if connection.isVideoMirroringSupported {
-            connection.isVideoMirrored = false/*(position == .front)*/
+            connection.isVideoMirrored = (position == .front)
         }
     }
 }
