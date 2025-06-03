@@ -60,7 +60,7 @@ internal class CameraOutput: NSObject {
         connection.videoOrientation = videoOrientation
 
         if connection.isVideoMirroringSupported {
-            connection.isVideoMirrored = (position == .front)
+            connection.isVideoMirrored = false/*(position == .front)*/
         }
     }
 }
